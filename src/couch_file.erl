@@ -243,7 +243,7 @@ open_ns(FilePath, _Options) ->
     %% readahead
     {ok, Fd} = emmap:open(FilePath, [read, private, nolock]),
     %% Hopefully trigger readahead starting from the beginning of the file
-    {Time, _} = timer:tc(couch_file, read_all, [Fd]),
+    {_Time, _} = timer:tc(couch_file, read_all, [Fd]),
     %%io:format(standard_error, "Database '~s' of size ~w bytes prefetched in ~f seconds~n", [FilePath, Size, Time/1000000]),
     {ok, Length} = file:position(Fd, eof),
     {ok, #file{fd=Fd, eof=Length, path=FilePath}}.
