@@ -31,9 +31,11 @@
 -export([open_process_all/2, process_to_ets/2]).
 
 process_to_ets(DbName, TableName) ->
-    ets:new(TableName, [set,public,named_table]),
-    IterFn = fun(Key, Body, AccIn) ->
-                     ets:insert_new(TableName, {Key, Body}),
+    ets:new(TableName, [set,public,named_table,compressed]),
+    ets:insert(TableName, {docs, 0}),
+    IterFn = fun(_Key, _Body, AccIn) ->
+                     ets:update_counter(TableName, docs, 1),
+                     %%ets:insert_new(TableName, {Key, Body}),
                      AccIn
              end,
     open_process_all(DbName, IterFn).
@@ -41,12 +43,14 @@ process_to_ets(DbName, TableName) ->
 open_process_all(DbName, IterFn) ->
     {Db, _} = open(DbName),
     all_docs_iter(DbName, Db, IterFn),
+    io:format("~s:~p~n", [?FILE, ?LINE]),
     close(Db).
 
 open(FilePath) ->
     DbName = "foo",
     {ok, Fd} = couch_file:open(FilePath, []),
     {ok, Header} = couch_file:read_header(Fd),
+    io:format("Header: ~p~n", [Header]),
     Db = couch_db_updater:init_db(DbName, FilePath, Fd, Header),
     {Db, Header}.
 
