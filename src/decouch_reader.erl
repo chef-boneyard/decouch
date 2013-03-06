@@ -43,14 +43,12 @@ process_to_ets(DbName, TableName) ->
 open_process_all(DbName, IterFn) ->
     {Db, _} = open(DbName),
     all_docs_iter(DbName, Db, IterFn),
-    io:format("~s:~p~n", [?FILE, ?LINE]),
     close(Db).
 
 open(FilePath) ->
     DbName = "foo",
     {ok, Fd} = couch_file:open(FilePath, []),
     {ok, Header} = couch_file:read_header(Fd),
-    io:format("Header: ~p~n", [Header]),
     Db = couch_db_updater:init_db(DbName, FilePath, Fd, Header),
     {Db, Header}.
 
@@ -78,5 +76,5 @@ all_docs_iter(Name, Db, IterFun) ->
     InFun = fun(KV, Reds, Acc) -> process_each_doc(IterFun, Db, KV, Reds, Acc) end,
     {Time, _} = timer:tc(
                   couch_btree, fold, [Db#db.fulldocinfo_by_id_btree, InFun, FoldAccInit, Options] ),
-    io:format(standard_error, "Database '~s' processed in ~f seconds~n", [Name, Time/1000000]),
+    %%io:format(standard_error, "Database '~s' processed in ~f seconds~n", [Name, Time/1000000]),
     ok.
