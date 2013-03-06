@@ -68,13 +68,13 @@ process_each_doc(F, Db, Kv, _Reds, AccIn) ->
     end,
     {ok, AccOut}.
 
-all_docs_iter(Name, Db, IterFun) ->
+all_docs_iter(_Name, Db, IterFun) ->
     Limit = 10,
     SkipCount = 0,
     Options = [end_key_gt],
     FoldAccInit = {Limit, SkipCount, undefined, []},
     InFun = fun(KV, Reds, Acc) -> process_each_doc(IterFun, Db, KV, Reds, Acc) end,
-    {Time, _} = timer:tc(
+    {_, _} = timer:tc(
                   couch_btree, fold, [Db#db.fulldocinfo_by_id_btree, InFun, FoldAccInit, Options] ),
     ?LOG_DEBUG("Database '~s' processed in ~f seconds~n", [Name, Time/1000000]),
     ok.
