@@ -43,14 +43,12 @@ process_to_ets(DbName, TableName) ->
 open_process_all(DbName, IterFn) ->
     {Db, _} = open(DbName),
     all_docs_iter(DbName, Db, IterFn),
-    io:format("~s:~p~n", [?FILE, ?LINE]),
     close(Db).
 
 open(FilePath) ->
     DbName = "foo",
     {ok, Fd} = couch_file:open(FilePath, []),
     {ok, Header} = couch_file:read_header(Fd),
-    io:format("Header: ~p~n", [Header]),
     Db = couch_db_updater:init_db(DbName, FilePath, Fd, Header),
     {Db, Header}.
 
