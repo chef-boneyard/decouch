@@ -235,8 +235,6 @@ pread_ns(#file{fd=Fd,tail_append_begin=TailAppendBegin} = _File, Pos, Bytes) ->
     {ok, Bin, Pos >= TailAppendBegin}.
 
 open_ns(FilePath, _Options) ->
-    {ok, FileInfo} = file:read_file_info(FilePath),
-    Size = FileInfo#file_info.size,
     %% We know we are going to read the whole file, so we should bite
     %% the bullet and read ahead the whole thing. Couchdb's access
     %% pattern is from end towards beginning so it actively subverts
